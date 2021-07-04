@@ -14,7 +14,7 @@ def parser():
     global LAST_CACHED
 
     if time() - LAST_CACHED < CACHE_TIMEOUT:
-        return CACHE
+        return CACHE.copy()
 
     try:
         # Downloading the data from VPNGate CSV API
@@ -47,7 +47,7 @@ def parser():
                 results.append(current_server) # Append the resulting server object to the list of results
                 current_server = {}
 
-        CACHE = results
+        CACHE = results.copy()
         LAST_CACHED = time()
         return results
     except Exception as err:
