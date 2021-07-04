@@ -1,6 +1,6 @@
 from time import time
 from requests import get
-from constants import CACHE_TIMEOUT, CSV_API_URL, DATA_FIELDS
+from constants import CACHE_TIMEOUT, CSV_API_URL, DATA_FIELDS, INT_DATA
 from exceptions import ParseError, RequestError
 
 CACHE = None
@@ -36,7 +36,14 @@ def parser():
             if len(server_data) == 15:
                 # Iterate through all of the elements in the CSV Data
                 for index, element in enumerate(server_data):
-                    current_server[DATA_FIELDS[index]] = element
+                    if DATA_FIELDS[index] in INT_DATA:
+                        try:
+                            current_server[DATA_FIELDS[index]] = int(element)
+                        except Exception:
+                            continue
+                    else:
+                        current_server[DATA_FIELDS[index]] = element
+
                 results.append(current_server) # Append the resulting server object to the list of results
                 current_server = {}
 
