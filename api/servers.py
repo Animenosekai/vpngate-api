@@ -84,8 +84,13 @@ def hello(path):
             server = results[0]
 
             if download:
-                result = b64decode(server["base64Config"])
-                return send_file(BytesIO(result), as_attachment=True, attachment_filename="{country} Server ({ip}).ovpn".format(country=server["countryShort"], ip=server["ip"]))
+                try:
+                    result = b64decode(server["base64Config"])
+                    return send_file(BytesIO(result), as_attachment=True, attachment_filename="{country} Server ({ip}).ovpn".format(country=server["countryShort"], ip=server["ip"]))
+                except KeyError as e:
+                    print("KeyError in server")
+                    print(server.keys())
+                    raise e
 
             # no download but server specified
             if not config:
