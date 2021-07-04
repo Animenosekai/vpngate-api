@@ -2,6 +2,7 @@ from time import time
 from requests import get
 from constants import CACHE_TIMEOUT, CSV_API_URL, DATA_FIELDS, INT_DATA
 from exceptions import ParseError, RequestError
+from copy import deepcopy
 
 CACHE = None
 LAST_CACHED = 0
@@ -14,7 +15,7 @@ def parser():
     global LAST_CACHED
 
     if time() - LAST_CACHED < CACHE_TIMEOUT:
-        return CACHE.copy()
+        return deepcopy(CACHE)
 
     try:
         # Downloading the data from VPNGate CSV API
@@ -47,7 +48,7 @@ def parser():
                 results.append(current_server) # Append the resulting server object to the list of results
                 current_server = {}
 
-        CACHE = results.copy()
+        CACHE = deepcopy(results)
         LAST_CACHED = time()
         return results
     except Exception as err:
