@@ -1,6 +1,11 @@
 from flask import request, Response
 from json import dumps
 
+CACHE_TIMEOUT = 600 # in sec
+CSV_API_URL = "http://www.vpngate.net/api/iphone/"
+CSV_FIELDS = ["ServerName", "IP", "Score", "Ping", "Speed", "CountryLong", "CountryShort", "NumberOfVPNSessions", "Uptime", "TotalUsers", "TotalTraffic", "LogType", "Operator", "Message", "OpenVPN_ConfigData_Base64"]
+DATA_FIELDS = ["name", "ip", "score", "ping", "speed", "countryLong", "countryShort", "numberOfSessions", "uptime", "totalUsers", "totalTraffic", "logType", "operator", "message", "base64Config"]
+
 def makeResponse(data=None, error=None, code=200, cache_hit=False):
     """
     Shapes the response
