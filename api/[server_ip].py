@@ -58,9 +58,6 @@ def hello(path):
 
         # Processing and Computation
         result = None # the result should in this variable
-
-        if "server" not in request.values:
-            return makeResponse({"message": "'server' is required"}, error="MISSING_ARGUMENT", code=400)
         
         config = str_to_bool(request.values.get("config", False))
         
