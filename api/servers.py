@@ -75,13 +75,17 @@ def hello(path):
         except ParseError as err:
             return makeResponse({"message": str(err)}, error="PARSER_ERROR", code=500)
 
+        print(results[0].keys())
+
         if server_ip:
             results = [server for server in results if server["ip"] == server_ip]
+            print(results[0].keys())
 
             if len(results) == 0:
                 return makeResponse({"message": "We couldn't find this server"}, error="NOT_FOUND", code=404)
             
             server = results[0]
+            print(server.keys())
 
             if download:
                 try:
