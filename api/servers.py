@@ -1,7 +1,9 @@
 # Imports
 
 ## Flask Management
-from flask import Flask, request
+from base64 import b64decode
+from io import BytesIO
+from flask import Flask, request, send_file
 from flask_compress import Compress
 from flask_cors import CORS
 
@@ -57,8 +59,12 @@ def hello(path):
 
 
         # Processing and Computation
-        
-        country = request.values.get("country", None)
+
+        country = request.values.get("country", None)        
+        download = str_to_bool(request.values.get("download", False))
+        if download and "server" not in request.values:
+            return makeResponse({"message": "'server' is a required argument"}, error="MISSING_ARGUMENT", code=400)
+        server_ip = request.values.get("server", None)
         academic = str_to_bool(request.values.get("academic", True))
         config = str_to_bool(request.values.get("config", False))
 
@@ -68,6 +74,23 @@ def hello(path):
             return makeResponse({"message": str(err)}, error="REQUEST_ERROR", code=500)
         except ParseError as err:
             return makeResponse({"message": str(err)}, error="PARSER_ERROR", code=500)
+
+        if server_ip:
+            results = [server for server in results if server["ip"] == server_ip]
+
+            if len(results) == 0:
+                return makeResponse({"message": "We couldn't find this server"}, error="NOT_FOUND", code=404)
+            
+            server = results[0]
+
+            if download:
+                result = b64decode(server["base64Config"])
+                return send_file(BytesIO(result), as_attachment=True, attachment_filename="{country} Server ({ip}).ovpn".format(country=server["countryShort"], ip=server["ip"]))
+
+            # no download but server specified
+            if not config:
+                server.pop("base64Config", None)
+            return makeResponse(server, cache_hit=False)
 
         if not config:
             for server in results:
